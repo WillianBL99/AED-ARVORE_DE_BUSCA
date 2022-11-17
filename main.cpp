@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <string>
 
 using namespace std;
 
@@ -96,16 +97,30 @@ void inserir(Arvore* arvore, int valor) {
   }
 }
 
+// Realiza a leitura dos nos em ordem decrescente
+void exibir(No *raiz, int nivel = 0) {
+  if(ehNull(raiz)) {
+    return;
+  }
+
+  exibir(raiz->dir, nivel + 1);
+
+  for(int i = 0; i < nivel; i++) {
+    cout << "    |";
+  }  
+
+  cout << "-";  
+  if(raiz->info < 10) cout << "0";
+  cout << raiz->info << "-|" <<endl;
+
+  exibir(raiz->esq, nivel + 1);
+}
+
+void inserirValores(Arvore*);
 
 int main() {
   Arvore *arvore;
   arvore = inicializaArvore(arvore);
-
-  if(buscar(arvore->raiz, 10) == NULL) {
-    cout << "Valor não encontrado" << endl;
-  } else {
-    cout << "Valor encontrado" << endl;
-  }
 
   return 0;
 }
