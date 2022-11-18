@@ -11,17 +11,11 @@ const string PESSOA_REMOVIDA_COM_SUCESSO = "Pessoa removida com sucesso!";
 const string PESSOA_CADASTRADA_COM_SUCESSO = "Pessoa cadastrada com sucesso!";
 const string SEM_CADASTROS = "Não há funcionários cadastrados!";
 
-string CPFs[] = { "222.222.222-22", "111.111.111-11", "333.333.333-33", "444.444.444-44" };
-string nomes[] = { "Paulo", "Fernanda", "João", "Maria" };
-int idades[] = { 20, 30, 40, 50 };
-float salarios[] = { 1000.00, 2000.00, 3000.00, 4000.00 };
-
-
 typedef struct Pessoa {
   string cpf;
   string nome;
   int idade;
-  float salario;
+  int salario;
 } Pessoa;
 
 typedef struct No {
@@ -37,29 +31,101 @@ typedef struct Arvore {
 
 bool ehNull(No*);
 void exibeFuncionarios(No*);
+void menu(int, Arvore*, bool*);
 void inserirFuncionario(Arvore*, Pessoa*);
+void inserirFuncionarios(Arvore*, int);
+string gerarCPF();
+string gerarNome();
+int opcoes();
+int gerarIdade();
+int gerarSalario();
 No *criaNovoNo(Pessoa*);
+No *buscaFuncionario(Arvore*, string);
 No *removeFuncionario(Arvore*, string);
+Pessoa *getDadosPessoa();
 Arvore *inicializaArvore();
-Pessoa *buscaFuncionario(No*, string);
 
 int main() {
+  bool continuar = true;
   setlocale(LC_ALL, "Portuguese");
   Arvore *funcionarios = inicializaArvore();
 
-  int tamanho = sizeof(CPFs) / sizeof(CPFs[0]);
-  for(int i = 0; i < tamanho; i++) {
-    Pessoa *pessoa = new Pessoa;
-    pessoa->cpf = CPFs[i];
-    pessoa->nome = nomes[i];
-    pessoa->idade = idades[i];
-    pessoa->salario = salarios[i];
-    inserirFuncionario(funcionarios, pessoa);
+  while(continuar) {
+    menu(opcoes(), funcionarios, &continuar);
   }
 
-  exibeFuncionarios(funcionarios->raiz);
-
+  cout << "Programa finalizado!" << endl;
   return 0;
+}
+
+int opcoes() {
+  string opcoesMenu[] = {
+    "Sair",
+    "Cadastrar Funcionarios",
+    "Cadastrar um Funcionario",
+    "Exibir Funcionarios",
+    "Remover Funcionario",
+    "Buscar Funcionario",
+    "Quantidade de Funcionarios"
+  };
+  int opcao = 0;
+
+  cout << "--- Menu ---" << endl;
+  int tamanho = sizeof(opcoesMenu) / sizeof(opcoesMenu[0]);
+  for(int i = 1; i < tamanho; i++) {
+    cout << i << " - " << opcoesMenu[i] << endl;
+  }
+  cout << "0 - " << opcoesMenu[0] << endl;
+
+  cout << "Opção: ";
+  cin >> opcao;
+  return opcao;
+}
+
+void menu(int opcao, Arvore *funcionarios, bool *continuar) {
+  int qtdFuncionarios = 0;
+  string cpf;
+  No *funcionario;
+  Pessoa *pessoa;
+  switch(opcao) {
+    case 1:
+      cout << "Quantos funcionarios deseja inserir? ";
+      cin >> qtdFuncionarios;
+      inserirFuncionarios(funcionarios, qtdFuncionarios);
+      break;
+    case 2:
+      pessoa = getDadosPessoa();
+      inserirFuncionario(funcionarios, pessoa);
+      break;
+    case 3:
+      exibeFuncionarios(funcionarios->raiz);
+      break;
+    case 4:
+      cout << "Remover funcionario" << endl;
+      cout << "Insira o CPF do funcionario: ";
+      cin >> cpf;
+      cout << "Funcionario removido:\n";
+      funcionario = removeFuncionario(funcionarios, cpf);
+      exibeFuncionarios(funcionario);
+      break;
+
+    case 5:
+      cout << "Busca por CPF: ";
+      cout << "Insira o CPF do funcionario: ";
+      cin >> cpf;
+      funcionario = buscaFuncionario(funcionarios, cpf);
+      exibeFuncionarios(funcionario);
+      break;
+    case 6:
+      cout << "Quantidade de funcionarios: " << funcionarios->tamanho << endl;
+      break;
+    case 0:
+      *continuar = false;
+      break;
+    default:
+      cout << "Opção inválida!" << endl;
+      break;
+  }
 }
 
 bool ehNull(No *no) {
@@ -110,6 +176,28 @@ void inserirFuncionario(Arvore *arvore, Pessoa *pessoa) {
   arvore->tamanho++;
 }
 
+Pessoa *getDadosPessoa() {
+  string cpf, nome;
+  int idade, salario;
+
+  cout << "Insira o CPF: ";
+  cin >> cpf;
+  cout << "Insira o nome: ";
+  cin >> nome;
+  cout << "Insira a idade: ";
+  cin >> idade;
+  cout << "Insira o salario (int): ";
+  cin >> salario;
+
+  Pessoa *pessoa = (Pessoa*) malloc(sizeof(Pessoa));
+  pessoa->cpf = cpf;
+  pessoa->nome = nome;
+  pessoa->idade = idade;
+  pessoa->salario = salario;
+
+  return pessoa;
+}
+
 void exibeFuncionarios(No *no) {
   if(ehNull(no)) {
     return;
@@ -138,7 +226,7 @@ No *busca(No *no, string cpf) {
   }
 }
 
-Pessoa *buscaFuncionario(Arvore *arvore, string cpf) {
+No *buscaFuncionario(Arvore *arvore, string cpf) {
   if(ehNull(arvore->raiz)) {
     cout << PESSOA_NAO_ENCONTRADA << endl;
     return NULL;
@@ -151,7 +239,7 @@ Pessoa *buscaFuncionario(Arvore *arvore, string cpf) {
     return NULL;
   }
 
-  return no->info;
+  return no;
 }
 
 No *removeFuncionario(Arvore *arvore, string cpf) {
@@ -202,8 +290,74 @@ No *removeFuncionario(Arvore *arvore, string cpf) {
     noAux->dir = noAtual->dir;
   }
 
+  if(ehNull(noPai)) {
+    arvore->raiz = noAux;
+  } else if(noAtual == noPai->esq) {
+    noPai->esq = noAux;
+  } else {
+    noPai->dir = noAux;
+  }
+  
   No *noRemovido = noAtual;
   arvore->tamanho--;
 
   return noRemovido;
+}
+
+string gerarCPF() {
+  string cpf = "";
+  const int TAMANHO_CPF = 11;
+  for(int i = 0; i < TAMANHO_CPF; i++) {
+    if(i == 3 || i == 6) {
+      cpf += ".";
+    } else if(i == 9) {
+      cpf += "-";
+    }
+    
+    cpf += to_string(rand() % 10);
+  }
+  return cpf;
+}
+
+string gerarNome() {
+  string nome = "";
+  const int INICIO_MIN = 97;
+  const int INICIO_MAI = 65;
+  const int TAMANHO_ALFABETO = 26;
+  const int TAMANHO_NOME = rand() % 10 + 3;
+
+  for(int i = 0; i < TAMANHO_NOME; i++) {
+    if(i == 0) {
+      nome += (char) (rand() % TAMANHO_ALFABETO + INICIO_MAI);
+    } else {
+      nome += (char) (rand() % TAMANHO_ALFABETO + INICIO_MIN);
+    }
+  }
+
+  return nome;
+}
+
+int gerarIdade() {
+  const int IDADE_MIN = 18;
+  const int IDADE_MAX = 65;
+  return rand() % (IDADE_MAX - IDADE_MIN + 1) + IDADE_MIN;
+}
+
+int gerarSalario() {
+  const int SALARIO_MIN = 1000;
+  const int SALARIO_MAX = 10000;
+  return rand() % (SALARIO_MAX - SALARIO_MIN + 1) + SALARIO_MIN;
+}
+
+void inserirFuncionarios(Arvore *arvore, int tamanho) {
+  for(int i = 0; i < tamanho; i++) {
+    Pessoa *pessoa = new Pessoa;
+    pessoa->nome = gerarNome();
+    pessoa->idade = gerarIdade();
+    pessoa->salario = gerarSalario();
+    pessoa->cpf = gerarCPF();
+    inserirFuncionario(arvore, pessoa);
+  }
+
+  cout << "Funcionários inseridos com sucesso!" << endl;
 }
