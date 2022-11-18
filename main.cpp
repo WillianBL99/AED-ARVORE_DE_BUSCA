@@ -35,7 +35,6 @@ int main() {
   Arvore *arvore;
   arvore = inicializaArvore(arvore);
   inserirValores(arvore, "cheia");
-  exibirArvore(arvore->raiz);
   liberarArvore(arvore);
   inserirValores(arvore, "zigzag");
   liberarArvore(arvore);
@@ -126,7 +125,7 @@ void exibirArvore(No *raiz, int nivel) {
     return;
   }
 
-  exibirArvore(raiz->dir, nivel + 1);
+  exibirArvore(raiz->esq, nivel + 1);
 
   for(int i = 0; i < nivel; i++) {
     cout << "    |";
@@ -136,7 +135,7 @@ void exibirArvore(No *raiz, int nivel) {
   if(raiz->info < 10) cout << "0";
   cout << raiz->info << "-|" <<endl;
 
-  exibirArvore(raiz->esq, nivel + 1);
+  exibirArvore(raiz->dir, nivel + 1);
 }
 
 void liberar(No *no) {
