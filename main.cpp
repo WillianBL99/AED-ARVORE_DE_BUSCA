@@ -35,20 +35,12 @@ int main() {
   Arvore *arvore;
   arvore = inicializaArvore(arvore);
   inserirValores(arvore, "cheia");
-  removeNo(arvore, 12);
-  cout << "---------------------" << endl;
   exibirArvore(arvore->raiz);
-  removeNo(arvore, 14);
-  cout << "---------------------" << endl;
-  exibirArvore(arvore->raiz);
-  removeNo(arvore, 8);
-  cout << "---------------------" << endl;
-  exibirArvore(arvore->raiz);
-  //liberarArvore(arvore);
-  //inserirValores(arvore, "zigzag");
-  //liberarArvore(arvore);
-  //inserirValores(arvore, "zigzag1");
-  //liberarArvore(arvore);
+  liberarArvore(arvore);
+  inserirValores(arvore, "zigzag");
+  liberarArvore(arvore);
+  inserirValores(arvore, "zigzag1");
+  liberarArvore(arvore);
 
   return 0;
 }
