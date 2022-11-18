@@ -66,7 +66,7 @@ int opcoes() {
     "Exibir Funcionarios",
     "Remover Funcionario",
     "Buscar Funcionario",
-    "Quantidade de Funcionarios"
+    "Quantidade de Funcionarios",
   };
   int opcao = 0;
 
@@ -87,6 +87,7 @@ void menu(int opcao, Arvore *funcionarios, bool *continuar) {
   string cpf;
   No *funcionario;
   Pessoa *pessoa;
+
   switch(opcao) {
     case 1:
       cout << "Quantos funcionarios deseja inserir? ";
@@ -314,7 +315,7 @@ string gerarCPF() {
       cpf += "-";
     }
     
-    cpf += to_string(rand() % 10);
+    cpf += "" + (rand() % 10);
   }
   return cpf;
 }
@@ -350,12 +351,14 @@ int gerarSalario() {
 }
 
 void inserirFuncionarios(Arvore *arvore, int tamanho) {
+
   for(int i = 0; i < tamanho; i++) {
     Pessoa *pessoa = new Pessoa;
+    pessoa->cpf = gerarCPF();
     pessoa->nome = gerarNome();
     pessoa->idade = gerarIdade();
-    pessoa->salario = gerarSalario();
-    pessoa->cpf = gerarCPF();
+    pessoa->salario = gerarSalario();    
+
     inserirFuncionario(arvore, pessoa);
   }
 
