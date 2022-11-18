@@ -27,6 +27,7 @@ void exibirArvore(No*, int = 0);
 void liberar(No*);
 void liberarArvore(Arvore*);
 void inserirValores(Arvore*, string);
+No* removeNo(Arvore*, int);
 
 Arvore *inicializaArvore(Arvore*);
 
@@ -34,6 +35,7 @@ int main() {
   Arvore *arvore;
   arvore = inicializaArvore(arvore);
   inserirValores(arvore, "cheia");
+  exibirArvore(arvore->raiz);
   liberarArvore(arvore);
   inserirValores(arvore, "zigzag");
   liberarArvore(arvore);
@@ -189,4 +191,62 @@ void inserir(Arvore* arvore, int valor) {
       }
     }
   }
+}
+
+No* removeNo(Arvore *arvore, int valor) {
+  if(ehNull(arvore->raiz)) {
+    return NULL;
+  }
+
+  No *noAtual = arvore->raiz;
+  No *noPai = NULL;
+
+  while(!ehNull(noAtual) && noAtual->info != valor) {
+    noPai = noAtual;
+
+    if(valor < noAtual->info) {
+      noAtual = noAtual->esq;
+    } else {
+      noAtual = noAtual->dir;
+    }
+  }
+
+  if(ehNull(noAtual)) {
+    return NULL;
+  }
+
+  No *noAux = NULL;
+
+  if(ehNull(noAtual->esq)) {
+    noAux = noAtual->dir;
+  } else if(ehNull(noAtual->dir)) {
+    noAux = noAtual->esq;
+  } else {
+    noAux = noAtual->esq;
+    No *noAuxPai = noAtual;
+
+    while(!ehNull(noAux->dir)) {
+      noAuxPai = noAux;
+      noAux = noAux->dir;
+    }
+
+    if(noAuxPai != noAtual) {
+      noAuxPai->dir = noAux->esq;
+      noAux->esq = noAtual->esq;
+    }
+
+    noAux->dir = noAtual->dir;
+  }
+
+  if(ehNull(noPai)) {
+    arvore->raiz = noAux;
+  } else if(noAtual == noPai->esq) {
+    noPai->esq = noAux;
+  } else {
+    noPai->dir = noAux;
+  }
+
+  No *noRemovido = noAtual;
+  free(noAtual);
+  return noRemovido;
 }
