@@ -30,10 +30,12 @@ typedef struct Arvore {
 } Arvore;
 
 bool ehNull(No*);
+void libera(No*);
+void liberaArvore(Arvore*);
 void exibeFuncionarios(No*);
 void menu(int, Arvore*, bool*);
-void inserirFuncionario(Arvore*, Pessoa*);
-void inserirFuncionarios(Arvore*, int);
+void insereFuncionario(Arvore*, Pessoa*);
+void insereFuncionarios(Arvore*, int);
 string gerarCPF();
 string gerarNome();
 int opcoes();
@@ -67,6 +69,7 @@ int opcoes() {
     "Remover Funcionario",
     "Buscar Funcionario",
     "Quantidade de Funcionarios",
+    "Libera Arvore"
   };
   int opcao = 0;
 
@@ -92,11 +95,11 @@ void menu(int opcao, Arvore *funcionarios, bool *continuar) {
     case 1:
       cout << "Quantos funcionarios deseja inserir? ";
       cin >> qtdFuncionarios;
-      inserirFuncionarios(funcionarios, qtdFuncionarios);
+      insereFuncionarios(funcionarios, qtdFuncionarios);
       break;
     case 2:
       pessoa = getDadosPessoa();
-      inserirFuncionario(funcionarios, pessoa);
+      insereFuncionario(funcionarios, pessoa);
       break;
     case 3:
       exibeFuncionarios(funcionarios->raiz);
@@ -105,9 +108,11 @@ void menu(int opcao, Arvore *funcionarios, bool *continuar) {
       cout << "Remover funcionario" << endl;
       cout << "Insira o CPF do funcionario: ";
       cin >> cpf;
-      cout << "Funcionario removido:\n";
       funcionario = removeFuncionario(funcionarios, cpf);
-      exibeFuncionarios(funcionario);
+      if(!ehNull(funcionario)) {
+        cout << PESSOA_REMOVIDA_COM_SUCESSO << endl;
+        exibeFuncionarios(funcionario);
+      }
       break;
 
     case 5:
@@ -119,6 +124,10 @@ void menu(int opcao, Arvore *funcionarios, bool *continuar) {
       break;
     case 6:
       cout << "Quantidade de funcionarios: " << funcionarios->tamanho << endl;
+      break;
+    case 7:
+      liberaArvore(funcionarios->raiz);
+      cout << "Arvore liberada!" << endl;
       break;
     case 0:
       *continuar = false;
@@ -148,7 +157,7 @@ No *criaNovoNo(Pessoa *pessoa) {
   return novoNo;
 }
 
-void inserirFuncionario(Arvore *arvore, Pessoa *pessoa) {
+void insereFuncionario(Arvore *arvore, Pessoa *pessoa) {
   No *novoNo = criaNovoNo(pessoa);
   No *atual = arvore->raiz;
   No *anterior = NULL;
@@ -350,7 +359,7 @@ int gerarSalario() {
   return rand() % (SALARIO_MAX - SALARIO_MIN + 1) + SALARIO_MIN;
 }
 
-void inserirFuncionarios(Arvore *arvore, int tamanho) {
+void insereFuncionarios(Arvore *arvore, int tamanho) {
 
   for(int i = 0; i < tamanho; i++) {
     Pessoa *pessoa = new Pessoa;
@@ -359,8 +368,29 @@ void inserirFuncionarios(Arvore *arvore, int tamanho) {
     pessoa->idade = gerarIdade();
     pessoa->salario = gerarSalario();    
 
-    inserirFuncionario(arvore, pessoa);
+    insereFuncionario(arvore, pessoa);
   }
 
   cout << "Funcionários inseridos com sucesso!" << endl;
+}
+
+void libera(No *no) {
+  if(ehNull(no)) {
+    return;
+  }
+
+  libera(no->esq);
+  libera(no->dir);
+  free(no);
+}
+
+void liberaArvore(Arvore *arvore) {
+  if(ehNull(arvore->raiz)) {
+    return;
+  }
+
+  libera(arvore->raiz);
+
+  arvore->raiz = NULL;
+  arvore->tamanho = 0;
 }
