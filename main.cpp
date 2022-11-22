@@ -6,6 +6,7 @@ using namespace std;
 int ARVORE_CHEIA[] = { 12, 6, 18, 3, 9, 14, 22, 2, 4, 8, 10, 13, 15, 21, 23 };
 int ARVORE_ZIGZAG[] = { 5, 6, 7, 8, 9, 19, 18, 10, 11, 12, 13, 14, 15, 16, 17 };
 int ARVORE_ZIGZAG1[] = { 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19 };
+int ARVORE_COMPLETA[] = { 12, 6, 18, 3, 9, 14, 22, 2, 4, 8, 10, 13, 15, 21, 23, 1, 5, 7, 11, 16, 20, 24, 25 };
 
 typedef struct No {
   int info;
@@ -36,6 +37,8 @@ int main() {
   arvore = inicializaArvore(arvore);
   inserirValores(arvore, "cheia");
   liberarArvore(arvore);
+  inserirValores(arvore, "completa");
+  liberarArvore(arvore);
   inserirValores(arvore, "zigzag");
   liberarArvore(arvore);
   inserirValores(arvore, "zigzag1");
@@ -51,6 +54,9 @@ void inserirValores(Arvore *arvore, string tipo) {
   if(tipo == "cheia") {
     vetor = ARVORE_CHEIA;
     tamanho = sizeof(ARVORE_CHEIA) / sizeof(int);
+  } else if(tipo == "completa") {
+    vetor = ARVORE_COMPLETA;
+    tamanho = sizeof(ARVORE_COMPLETA) / sizeof(int);
   } else if(tipo == "zigzag") {
     vetor = ARVORE_ZIGZAG;
     tamanho = sizeof(ARVORE_ZIGZAG) / sizeof(int);

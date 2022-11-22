@@ -48,8 +48,8 @@ Pessoa *getDadosPessoa();
 Arvore *inicializaArvore();
 
 int main() {
-  bool continuar = true;
   setlocale(LC_ALL, "Portuguese");
+  bool continuar = true;
   Arvore *funcionarios = inicializaArvore();
 
   while(continuar) {
@@ -88,8 +88,8 @@ int opcoes() {
 void menu(int opcao, Arvore *funcionarios, bool *continuar) {
   int qtdFuncionarios = 0;
   string cpf;
-  No *funcionario;
   Pessoa *pessoa;
+  No *funcionario;
 
   switch(opcao) {
     case 1:
@@ -126,7 +126,7 @@ void menu(int opcao, Arvore *funcionarios, bool *continuar) {
       cout << "Quantidade de funcionarios: " << funcionarios->tamanho << endl;
       break;
     case 7:
-      liberaArvore(funcionarios->raiz);
+      liberaArvore(funcionarios);
       cout << "Arvore liberada!" << endl;
       break;
     case 0:
@@ -323,8 +323,10 @@ string gerarCPF() {
     } else if(i == 9) {
       cpf += "-";
     }
+
+    int numero = rand() % 10;
     
-    cpf += "" + (rand() % 10);
+    cpf += to_string(numero);
   }
   return cpf;
 }
